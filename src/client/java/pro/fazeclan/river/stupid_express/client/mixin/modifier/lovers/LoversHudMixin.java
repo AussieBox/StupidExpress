@@ -6,6 +6,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.PlayerFaceRenderer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,21 +26,16 @@ public abstract class LoversHudMixin {
 
     @Inject(method = "renderHud", at = @At("TAIL"))
     private static void loversHud(Font renderer, LocalPlayer player, GuiGraphics context, DeltaTracker tickCounter, CallbackInfo ci) {
-        if (StupidExpressClient.target == null) {
-            return;
-        }
         var component = LoversComponent.KEY.get(player);
-        var targetComponent = LoversComponent.KEY.get(StupidExpressClient.target);
         if (component.isLover()
-                && targetComponent.isLover()
                 && !TMMClient.isPlayerSpectatingOrCreative()) {
             context.pose().pushPose();
-            context.pose().translate(context.guiWidth() / 2.0f, context.guiHeight() / 2.0f - 35.0f, 0.0f);
-            context.pose().scale(0.6f, 0.6f, 1.0f);
 
-            //Component status = Component.translatable("tip.lovers.partner", component.getPartner(Minecraft.getInstance().player).getName());
-            var status = Component.translatable("hud.lovers.partner");
-            context.drawString(renderer, status, -renderer.width(status) / 2, 32, SERoles.LOVERS.color());
+            if (Minecraft.getInstance().player.connection.getPlayerInfo(component.getLover()) == null) return;
+
+            Component name = Component.translatable("hud.lovers.notification", Minecraft.getInstance().player.connection.getPlayerInfo(component.getLover()).getProfile().getName());
+            PlayerFaceRenderer.draw(context,Minecraft.getInstance().player.connection.getPlayerInfo(component.getLover()).getSkin().texture(), 2, context.guiHeight()-14,12);
+            context.drawString(renderer, name, 18, context.guiHeight()-12, SERoles.LOVERS.color());
 
             context.pose().popPose();
         }
@@ -70,6 +66,7 @@ public abstract class LoversHudMixin {
                     "hud.lovers.in_love",
                     lover.getName()
             );
+
             context.drawString(
                     renderer,
                     name,
