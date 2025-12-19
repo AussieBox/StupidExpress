@@ -1,12 +1,9 @@
 package pro.fazeclan.river.stupid_express.mixin.role.avaricious;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.doctor4t.trainmurdermystery.cca.GameRoundEndComponent;
 import dev.doctor4t.trainmurdermystery.cca.GameTimeComponent;
 import dev.doctor4t.trainmurdermystery.cca.GameWorldComponent;
 import dev.doctor4t.trainmurdermystery.cca.PlayerShopComponent;
-import dev.doctor4t.trainmurdermystery.game.GameConstants;
-import dev.doctor4t.trainmurdermystery.game.GameFunctions;
 import dev.doctor4t.trainmurdermystery.game.MurderGameMode;
 import dev.doctor4t.trainmurdermystery.index.TMMSounds;
 import net.minecraft.network.chat.Component;
@@ -19,11 +16,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-import pro.fazeclan.river.stupid_express.StupidExpress;
+import pro.fazeclan.river.stupid_express.SERoles;
 import pro.fazeclan.river.stupid_express.role.avaricious.AvariciousGoldHandler;
-
-import java.util.Iterator;
 
 @Mixin(MurderGameMode.class)
 public class AvariciousGoldPayout {
@@ -32,18 +26,14 @@ public class AvariciousGoldPayout {
             method = "tickServerGameLoop",
             at = @At("TAIL")
     )
-    private void avaricious$payout(
+    private void payout(
             ServerLevel serverWorld,
             GameWorldComponent gameWorldComponent,
-            CallbackInfo ci
-    ) {
-        GameTimeComponent timeComponent = GameTimeComponent.KEY.get(serverWorld);
-        long time = timeComponent.time;
-
-        if (AvariciousGoldHandler.gameStartTime == -1) {
-            AvariciousGoldHandler.gameStartTime = time;
-            return;
-        }
+            CallbackInfo ci,
+            @Local(name = "player") ServerPlayer player
+    )
+    {
+        if (gameWorldComponent.isRole(player, SERoles.AVARICIOUS)) {
 
         long elapsed = time - AvariciousGoldHandler.gameStartTime;
 

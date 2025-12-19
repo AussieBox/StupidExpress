@@ -6,8 +6,8 @@ import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
-import pro.fazeclan.river.stupid_express.ModItems;
-import pro.fazeclan.river.stupid_express.StupidExpress;
+import pro.fazeclan.river.stupid_express.SEItems;
+import pro.fazeclan.river.stupid_express.SERoles;
 import pro.fazeclan.river.stupid_express.role.arsonist.cca.DousedPlayerComponent;
 
 public class OilDousingHandler {
@@ -21,7 +21,7 @@ public class OilDousingHandler {
                 return InteractionResult.PASS;
             }
             GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(player.level());
-            if (!gameWorldComponent.isRole(player, StupidExpress.ARSONIST)) {
+            if (!gameWorldComponent.isRole(player, SERoles.ARSONIST)) {
                 return InteractionResult.PASS;
             }
             if (!(entity instanceof ServerPlayer victim)) {
@@ -29,14 +29,16 @@ public class OilDousingHandler {
             }
 
             var item = player.getItemInHand(interactionHand);
-            if (!item.is(ModItems.JERRY_CAN)) {
+            if (!item.is(SEItems.JERRY_CAN)) {
                 return InteractionResult.PASS;
             }
             if (interacting.getCooldowns().isOnCooldown(item.getItem())) {
                 return InteractionResult.PASS;
             }
             if (interacting.gameMode.isSurvival()) {
-                var playerCount = ((ServerLevel) level).getPlayers(GameFunctions::isPlayerAliveAndSurvival).size();
+                var alivePlayers = ((ServerLevel) level).getPlayers(GameFunctions::isPlayerAliveAndSurvival);
+                var playerCount = alivePlayers.size();
+                var dousedPlayers = alivePlayers.stream().filter(p -> DousedPlayerComponent.KEY.get(p).isDoused()).toList();
                 var cd = 45 - (5/3.0) * (double) playerCount;
 
                 if (playerCount > 15) {
@@ -44,6 +46,9 @@ public class OilDousingHandler {
                 }
 
                 interacting.getCooldowns().addCooldown(item.getItem(), (int) (cd * 20));
+                if (dousedPlayers.size() >= (int) (alivePlayers.size() * 0.3)) {
+                    interacting.getCooldowns().addCooldown(SEItems.LIGHTER, (int) (cd * 20));
+                }
             }
             DousedPlayerComponent doused = DousedPlayerComponent.KEY.get(victim);
             doused.setDoused(true);

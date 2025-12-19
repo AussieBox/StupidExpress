@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import pro.fazeclan.river.stupid_express.SERoles;
 import pro.fazeclan.river.stupid_express.StupidExpress;
 import pro.fazeclan.river.stupid_express.role.arsonist.cca.DousedPlayerComponent;
 import pro.fazeclan.river.stupid_express.role.neutral.NeutralRoleWorldComponent;
@@ -28,25 +29,31 @@ public class LighterItem extends Item {
         if (!(level instanceof ServerLevel serverLevel)) {
             return InteractionResultHolder.pass(player.getItemInHand(interactionHand));
         }
-        if (!gwc.isRole(player, StupidExpress.ARSONIST)) {
+        if (!gwc.isRole(player, SERoles.ARSONIST)) {
+            return InteractionResultHolder.pass(player.getItemInHand(interactionHand));
+        }
+        if (player.getCooldowns().isOnCooldown(this)) {
             return InteractionResultHolder.pass(player.getItemInHand(interactionHand));
         }
         var server = player.getServer();
         var players = server.getPlayerList().getPlayers();
         var alivePlayers = players.stream().filter(GameFunctions::isPlayerAliveAndSurvival).toList();
         var dousedPlayers = alivePlayers.stream().filter(p -> DousedPlayerComponent.KEY.get(p).isDoused()).toList();
-        if (dousedPlayers.size() == alivePlayers.size() - 1) {
-            var nrwc = NeutralRoleWorldComponent.KEY.get(serverLevel);
-            nrwc.setWinningRole(StupidExpress.ARSONIST);
-            nrwc.sync();
-            GameRoundEndComponent.KEY.get(serverLevel).setRoundEndData(serverLevel.players(), GameFunctions.WinStatus.KILLERS);
-
+        if (dousedPlayers.size() >= (int) (alivePlayers.size() * 0.3)) {
             for (ServerPlayer doused : dousedPlayers) {
                 GameFunctions.killPlayer(doused, true, player, StupidExpress.id("ignited"));
                 DousedPlayerComponent.KEY.get(doused).reset();
             }
 
-            GameFunctions.stopGame(serverLevel);
+            var playersLeft = players.stream().filter(GameFunctions::isPlayerAliveAndSurvival).count();
+            if (playersLeft == 1) {
+                var nrwc = NeutralRoleWorldComponent.KEY.get(serverLevel);
+                nrwc.setWinningRole(SERoles.ARSONIST);
+                nrwc.sync();
+                GameRoundEndComponent.KEY.get(serverLevel).setRoundEndData(serverLevel.players(), GameFunctions.WinStatus.KILLERS);
+
+                GameFunctions.stopGame(serverLevel);
+            }
         } else {
             GameFunctions.killPlayer(player, true, player, StupidExpress.id("failed_ignite"));
         }

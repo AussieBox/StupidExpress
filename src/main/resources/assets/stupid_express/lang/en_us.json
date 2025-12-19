@@ -1,7 +1,6 @@
 {
   "announcement.goals.amnesiac": "Steal a role from a body and act as that role!",
   "announcement.role.amnesiac": "Amnesiac!",
-  "announcement.win.amnesiac": "The Amnesiac Wins!",
   "hud.amnesiac.select_body": "Interact to steal the role!",
 
   "announcement.goals.arsonist": "Douse all players and ignite them to win!",
@@ -11,13 +10,14 @@
   "hud.arsonist.doused.true": "Doused",
   "hud.arsonist.doused.false": "Not Doused",
   "item.stupid_express.jerry_can": "Jerry Can",
+  "item.stupid_express.jerry_can.tooltip": "Interact on a player to douse them in oil.",
   "item.stupid_express.lighter": "Lighter",
+  "item.stupid_express.lighter.tooltip": "When this goes on cooldown, that indicates it is time to ignite.\nInteract with this to ignite all currently doused players\nwhen the time has come.",
   "death_reason.stupid_express.failed_ignite": "ignition misfire.",
   "death_reason.stupid_express.ignited": "being lit ablaze.",
 
   "announcement.goals.necromancer": "Bring back the dead to have them do your bidding!",
   "announcement.role.necromancer": "Necromancer!",
-  "announcement.win.necromancer": "Necromancer Wins!",
   "hud.necromancer.possible_revive": "Interact to revive this player as a killer!",
   "hud.necromancer.no_possible_revive": "One of your killer cohorts must die before you revive!",
   "hud.necromancer.cooldown": "You must wait %ss before attempting this.",
@@ -30,6 +30,8 @@
   "tip.lovers.partner": "Your partner is %s!",
   "hud.lovers.partner": "Partner",
   "hud.lovers.in_love": "In love with %s!",
-  "hud.lovers.notification": "You are in love with someone on the train!",
-  "death_reason.stupid_express.broken_heart": " lost their lover."
+  "hud.lovers.notification": "You are in love with %s!",
+  "death_reason.stupid_express.broken_heart": "lost their lover.",
+  
+  "commands.stupid_express.set_config_value": "%s has been set to %s!"
 }
