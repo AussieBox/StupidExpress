@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import org.agmas.harpymodloader.Harpymodloader;
+import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.harpymodloader.events.ModifierAssigned;
 import org.agmas.harpymodloader.events.ResetPlayerEvent;
 import org.agmas.harpymodloader.modifiers.HMLModifiers;
@@ -47,6 +48,8 @@ public class SEModifiers {
         assignModifierComponents();
 
         /// ALLERGIC
+        HarpyModLoaderConfig.HANDLER.instance().disabledModifiers.add("allergic");
+
         AllowPlayerDeath.EVENT.register(((victim, killer, resourceLocation) -> {
             AllergicComponent allergy = AllergicComponent.KEY.get(victim);
             PlayerPoisonComponent poison = PlayerPoisonComponent.KEY.get(victim);

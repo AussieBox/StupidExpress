@@ -51,11 +51,15 @@ public class SEConfig implements AutoSyncedComponent {
     public void readFromNbt(CompoundTag tag, HolderLookup.Provider registryLookup) {
         this.necromancerHasShop = tag.contains("necromancer_has_shop") && tag.getBoolean("necromancer_has_shop");
         this.arsonistKeepsGameGoing = tag.contains("arsonist_keep_alive") && tag.getBoolean("arsonist_keep_alive");
+        this.loversWinWithCivilians = tag.contains("lovers_win_civilians") && tag.getBoolean("lovers_win_civilians");
+        this.loversWinWithKillers = tag.contains("lovers_win_killers") && tag.getBoolean("lovers_win_killers");
     }
 
     @Override
     public void writeToNbt(CompoundTag tag, HolderLookup.Provider registryLookup) {
         tag.putBoolean("necromancer_has_shop", this.necromancerHasShop);
         tag.putBoolean("arsonist_keep_alive", this.arsonistKeepsGameGoing);
+        tag.putBoolean("lovers_win_civilians", this.loversWinWithCivilians);
+        tag.putBoolean("lovers_win_killers", this.loversWinWithKillers);
     }
 }

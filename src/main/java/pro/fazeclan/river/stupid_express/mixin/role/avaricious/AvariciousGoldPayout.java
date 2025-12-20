@@ -8,6 +8,7 @@ import dev.doctor4t.wathe.game.gamemode.MurderGameMode;
 import dev.doctor4t.wathe.index.WatheSounds;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -51,7 +52,7 @@ public class AvariciousGoldPayout {
             if (nearbyPlayers > 0) {
                 PlayerShopComponent.KEY.get(player).addToBalance(nearbyPlayers * AvariciousGoldHandler.PAYOUT_PER_PLAYER);
                 // TODO: Isn't working currently, fix sound cue.
-                player.playSound(WatheSounds.UI_SHOP_BUY, 10.0f, 0.5f);
+                player.playNotifySound(WatheSounds.UI_SHOP_BUY, SoundSource.PLAYERS, 10.0f, 0.5f);
             }
         }
     }

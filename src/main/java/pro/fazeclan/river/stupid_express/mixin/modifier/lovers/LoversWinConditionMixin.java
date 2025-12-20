@@ -1,5 +1,6 @@
 package pro.fazeclan.river.stupid_express.mixin.modifier.lovers;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.doctor4t.wathe.cca.GameRoundEndComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import pro.fazeclan.river.stupid_express.SEModifiers;
 import pro.fazeclan.river.stupid_express.cca.CustomWinnerComponent;
+import pro.fazeclan.river.stupid_express.cca.SEConfig;
 import pro.fazeclan.river.stupid_express.modifier.lovers.cca.LoversComponent;
 
 import java.util.ArrayList;
@@ -32,15 +34,28 @@ public class LoversWinConditionMixin {
             cancellable = true
     )
     private void loversWinCheck(
-            ServerLevel serverWorld, GameWorldComponent gameWorldComponent, CallbackInfo ci
+            ServerLevel serverWorld,
+            GameWorldComponent gameWorldComponent,
+            CallbackInfo ci,
+            @Local(name = "winStatus") GameFunctions.WinStatus winStatus
     ) {
 
-        for (ServerPlayer player : serverWorld.getPlayers(GameFunctions::isPlayerAliveAndSurvival)) {
-            var component = LoversComponent.KEY.get(player);
-            if (component.won()) {
+        var config = SEConfig.KEY.get(serverWorld);
+        var loversAlive = false;
+        var remainingPlayers = serverWorld.getPlayers(GameFunctions::isPlayerAliveAndSurvival);
+        for (ServerPlayer player : remainingPlayers) {
+            var loversComponent = LoversComponent.KEY.get(player);
+            if (!loversComponent.isLover()) {
+                continue;
+            }
+
+            loversAlive = true;
+
+            // check for only lovers win condition
+            if (loversComponent.won()) {
                 var ce = CustomWinnerComponent.KEY.get(serverWorld);
                 var lovers = new ArrayList<Player>();
-                lovers.add(serverWorld.getPlayerByUUID(component.getLover()));
+                lovers.add(serverWorld.getPlayerByUUID(loversComponent.getLover()));
                 lovers.add(player);
                 ce.setWinningTextId(SEModifiers.LOVERS.identifier().getPath());
                 ce.setWinners(lovers);
@@ -52,7 +67,35 @@ public class LoversWinConditionMixin {
 
                 GameFunctions.stopGame(serverWorld);
                 ci.cancel();
+                return;
             }
+
+            // check for lovers with killers win condition
+            if (config.isLoversWinWithKillers()) {
+                var lover = loversComponent.getLoverAsPlayer();
+                if (lover == null) {
+                    continue;
+                }
+                if (gameWorldComponent.isInnocent(player) && gameWorldComponent.isInnocent(lover)) {
+                    continue;
+                }
+                var remainingNonInnocent = remainingPlayers.stream().filter(hostile -> !gameWorldComponent.isInnocent(hostile)).toList();
+                if (remainingPlayers.size() - 1 != remainingNonInnocent.size()) {
+                    continue;
+                }
+                GameRoundEndComponent.KEY.get(serverWorld)
+                        .setRoundEndData(serverWorld.players(), GameFunctions.WinStatus.KILLERS);
+                GameFunctions.stopGame(serverWorld);
+                ci.cancel();
+                return;
+            }
+        }
+
+        // check if lovers can't win with civilians, and keep the game going
+        if (loversAlive
+                && !config.isLoversWinWithCivilians()
+                && (winStatus == GameFunctions.WinStatus.KILLERS || winStatus == GameFunctions.WinStatus.PASSENGERS)) {
+            ci.cancel();
         }
 
     }

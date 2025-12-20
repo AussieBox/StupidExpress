@@ -77,16 +77,6 @@ public class SERoles {
         OilDousingHandler.init();
         ArsonistItemGivingHandler.init();
 
-        ServerTickEvents.END_SERVER_TICK.register(server -> {
-            if (server.getPlayerCount() > 11) {
-                Harpymodloader.setRoleMaximum(NECROMANCER, 1);
-                Harpymodloader.setRoleMaximum(AVARICIOUS, 1);
-            } else {
-                Harpymodloader.setRoleMaximum(NECROMANCER, 0);
-                Harpymodloader.setRoleMaximum(AVARICIOUS, 0);
-            }
-        });
-
         ResetPlayerEvent.EVENT.register(player -> {
             var component = DousedPlayerComponent.KEY.get(player);
             component.reset();
@@ -96,6 +86,16 @@ public class SERoles {
         /// NECROMANCER
 
         RevivalSelectionHandler.init();
+
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (server.getPlayerCount() > 11) {
+                Harpymodloader.setRoleMaximum(NECROMANCER, 1);
+                Harpymodloader.setRoleMaximum(AVARICIOUS, 1);
+            } else {
+                Harpymodloader.setRoleMaximum(NECROMANCER, 0);
+                Harpymodloader.setRoleMaximum(AVARICIOUS, 0);
+            }
+        });
 
         /// AVARICIOUS
 

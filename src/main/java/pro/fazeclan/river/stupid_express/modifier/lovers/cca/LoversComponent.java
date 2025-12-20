@@ -1,5 +1,6 @@
 package pro.fazeclan.river.stupid_express.modifier.lovers.cca;
 
+import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import pro.fazeclan.river.stupid_express.StupidExpress;
+import pro.fazeclan.river.stupid_express.cca.SEConfig;
 
 import java.util.UUID;
 
@@ -47,21 +49,26 @@ public class LoversComponent implements AutoSyncedComponent {
             return false;
         }
         var serverLevel = (ServerLevel) serverPlayer.level();
-        if (serverLevel.getPlayers(GameFunctions::isPlayerAliveAndSurvival).size() != 2) {
-            return false;
-        }
         if (GameFunctions.isPlayerEliminated(this.player)) {
             return false;
         }
-        var lover = serverLevel.getPlayerByUUID(this.lover);
+        var lover = getLoverAsPlayer();
         if (lover == null) {
             return false;
         }
-        return !GameFunctions.isPlayerEliminated(lover);
+        if (GameFunctions.isPlayerEliminated(lover)) {
+            return false;
+        }
+        var remainingPlayers = serverLevel.getPlayers(GameFunctions::isPlayerAliveAndSurvival);
+        return remainingPlayers.size() == 2;
     }
 
     public boolean isLover() {
         return this.lover != null && !this.lover.equals(UUID.fromString("4bdab31c-279a-4123-acac-9830ac57f5ff"));
+    }
+
+    public Player getLoverAsPlayer() {
+        return this.player.level().getPlayerByUUID(this.lover);
     }
 
     @Override

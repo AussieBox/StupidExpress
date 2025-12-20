@@ -5,6 +5,8 @@ import dev.doctor4t.wathe.game.GameFunctions;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import pro.fazeclan.river.stupid_express.SEItems;
 import pro.fazeclan.river.stupid_express.SERoles;
@@ -54,7 +56,7 @@ public class OilDousingHandler {
             doused.setDoused(true);
             doused.sync();
 
-            //interacting.playSound(SoundEvents.BREWING_STAND_BREW);
+            interacting.playNotifySound(SoundEvents.BREWING_STAND_BREW, SoundSource.PLAYERS, 1.0f, 1.0f);
 
             return InteractionResult.CONSUME;
         }));

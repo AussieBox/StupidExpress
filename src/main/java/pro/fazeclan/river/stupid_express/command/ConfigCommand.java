@@ -24,6 +24,16 @@ public class ConfigCommand {
                                         .executes(ConfigCommand::arsonistKeepAliveExecute)
                                 )
                         )
+                        .then(Commands.literal("lovers_win_with_civilians")
+                                .then(Commands.argument("value", BoolArgumentType.bool())
+                                        .executes(ConfigCommand::loversWinCiviliansExecute)
+                                )
+                        )
+                        .then(Commands.literal("lovers_win_with_killers")
+                                .then(Commands.argument("value", BoolArgumentType.bool())
+                                        .executes(ConfigCommand::loversWinKillersExecute)
+                                )
+                        )
         );
     }
 
@@ -48,6 +58,30 @@ public class ConfigCommand {
         config.sync();
 
         source.sendSystemMessage(Component.translatable("commands.stupid_express.set_config_value", "arsonist_keeps_game_going", value));
+        return 1;
+    }
+
+    private static int loversWinCiviliansExecute(CommandContext<CommandSourceStack> ctx) {
+        var source = ctx.getSource();
+        var config = SEConfig.KEY.get(source.getLevel());
+        var value = ctx.getArgument("value", Boolean.class);
+
+        config.setLoversWinWithCivilians(value);
+        config.sync();
+
+        source.sendSystemMessage(Component.translatable("commands.stupid_express.set_config_value", "lovers_win_with_civilians", value));
+        return 1;
+    }
+
+    private static int loversWinKillersExecute(CommandContext<CommandSourceStack> ctx) {
+        var source = ctx.getSource();
+        var config = SEConfig.KEY.get(source.getLevel());
+        var value = ctx.getArgument("value", Boolean.class);
+
+        config.setLoversWinWithKillers(value);
+        config.sync();
+
+        source.sendSystemMessage(Component.translatable("commands.stupid_express.set_config_value", "lovers_win_with_killers", value));
         return 1;
     }
 
