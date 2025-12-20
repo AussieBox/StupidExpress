@@ -74,6 +74,7 @@ public abstract class LoversHudMixin {
             at = @At("TAIL")
     )
     private static void renderLovers(Font renderer, LocalPlayer player, GuiGraphics context, DeltaTracker tickCounter, CallbackInfo ci) {
+        var loversComponent = LoversComponent.KEY.get(player);
         if (StupidExpressClient.target == null) {
             return;
         }
@@ -87,7 +88,9 @@ public abstract class LoversHudMixin {
             return;
         }
         var config = SEConfig.KEY.get(level);
-        if (WatheClient.isPlayerAliveAndInSurvival() && !config.isLoversKnowImmediately()) {
+        if (WatheClient.isPlayerAliveAndInSurvival()
+                && !config.isLoversKnowImmediately()
+                && loversComponent.isLover()) {
             stupidexpress$renderLoversHud(renderer, context, Component.translatable("hud.lovers.partner"));
         }
         if (WatheClient.isPlayerSpectatingOrCreative()) {

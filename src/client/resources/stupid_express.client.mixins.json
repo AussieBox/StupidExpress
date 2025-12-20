@@ -11,7 +11,8 @@
     "role.necromancer.NecromancerHudMixin",
     "role.necromancer.NecromancerNoShopMixin",
     "role.neutral.CustomWinnerAnnouncementMixin",
-    "role.neutral.CustomWinnerTextRendering"
+    "role.neutral.CustomWinnerTextRendering",
+    "role.arsonist.ArsonistInstinctMixin"
   ],
   "injectors": {
     "defaultRequire": 1

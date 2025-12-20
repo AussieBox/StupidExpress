@@ -36,7 +36,7 @@ public class SEConfig implements AutoSyncedComponent {
     // Lovers know who their partner is immediately
     @Getter
     @Setter
-    private boolean loversKnowImmediately = false;
+    private boolean loversKnowImmediately = true;
 
     // If a Killer-Civilian combo happens, then lovers may win with killers.
     @Getter
