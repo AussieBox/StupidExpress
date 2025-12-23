@@ -48,8 +48,6 @@ public class SEModifiers {
         assignModifierComponents();
 
         /// ALLERGIC
-        HarpyModLoaderConfig.HANDLER.instance().disabledModifiers.add("allergic");
-
         AllowPlayerDeath.EVENT.register(((victim, killer, resourceLocation) -> {
             AllergicComponent allergy = AllergicComponent.KEY.get(victim);
             PlayerPoisonComponent poison = PlayerPoisonComponent.KEY.get(victim);
